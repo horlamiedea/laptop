@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 
     'crispy_forms',
     'django_countries',
+    'paystack',
 
     'system',
 ]
@@ -142,10 +143,14 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media_root')
-
+MEDIA_URL = '/media_root/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = '/'
+
+
+PAYSTACK_PUBLIC_KEY = 'pk_test_4d7ff6869c2f9b72bff47b34cdd2702a7400a796'
+PAYSTACK_SCRET_KEY = 'sk_test_7dfc9b0cfdb61a48b810889dbf753849e2fa0ae7'
