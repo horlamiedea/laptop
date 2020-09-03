@@ -13,6 +13,6 @@ urlpatterns = [
     path('order-summary/', OrderSummaryView.as_view(), name='order-summary'),
     path('checkout/', CheckoutView.as_view(), name='checkout'),
     path('payment/<payment_option>/', PaymentView.as_view(), name='payment'),
-    path('add-discount/', add_discount, name='add-discount'),
+    path('add-discount/', AddDiscount.as_view(), name='add-discount'),
 
 ]

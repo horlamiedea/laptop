@@ -136,7 +136,9 @@ class CheckoutView(View):
             form = CheckoutForm()
             context = {
                 'form': form,
-                'order': order
+                'discountform': DiscountForm(),
+                'order': order,
+                'DISPLAY_DISCOUNT_FORM': True
             }
             return render(self.request, 'checkout.html', context)
 
@@ -191,7 +193,8 @@ class PaymentView(View):
     def get(self, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
         context = {
-            'order': order
+            'order': order,
+            'DISPLAY_DISCOUNT_FORM': False
         }
         return render(self.request, 'payment.html', context)
 
@@ -234,22 +237,23 @@ def get_discount( request, code):
         messages.info(request, "This discount code doesn't exist")
         return redirect('checkout')
 
-def add_discount(request):
-    try:
-        order = Order.objects.get(
-            user=request.user,
-            ordered=False
-        )
-        order.discount = get_discount(request)
-        order.save()
-        messages.success(request, "Discount was added successfully")
-        return redirect('checkout')
+class AddDiscount(View):
+    def post(self, *args, **kwargs):
+            form = DiscountForm(self.request.POST or None)
+            if form.is_valid():
+                try:
+                    code = form.cleaned_data.get('code')
+                    order = Order.objects.get(
+                        user=self.request.user,
+                        ordered=False
+                    )
+                    order.discount = get_discount(self.request, code)
+                    order.save()
+                    messages.success(self.request, "Discount was added successfully")
+                    return redirect('checkout')
+                except ObjectDoesNotExist:
+                    messages.info(self.request, "You do not have an active order")
+                    return redirect('checkout')
 
-
-    except ObjectDoesNotExist:
-        messages.info(request, "You do not have an active order")
-        return redirect('checkout')
-    # if order_qs.exists():
-    #     order = order_qs[0]
 
 

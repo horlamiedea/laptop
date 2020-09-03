@@ -13,13 +13,13 @@
         <span class="text-muted">${{ order_item.get_final_price }}</span>
     </li>
     {% endfor %}
-    {% if order.coupon %}
+    {% if order.discount %}
     <li class="list-group-item d-flex justify-content-between bg-light">
         <div class="text-success">
         <h6 class="my-0">Promo code</h6>
-        <small>{{ order.coupon.code }}</small>
+        <small>{{ order.discount.code }}</small>
         </div>
-        <span class="text-success">-${{ order.coupon.amount }}</span>
+        <span class="text-success">-${{ order.discount.amount }}</span>
     </li>
     {% endif %}
     <li class="list-group-item d-flex justify-content-between">
@@ -28,11 +28,11 @@
     </li>
     </ul>
 
-    {% if DISPLAY_COUPON_FORM %}
-    <form class="card p-2" action="{% url 'core:add-coupon' %}" method="POST">
+    {% if DISPLAY_DISCOUNT_FORM %}
+    <form class="card p-2" action="{% url 'add-discount' %}" method="POST">
         {% csrf_token %}
         <div class="input-group">
-            {{ couponform.code }}
+            {{ discountform.code }}
             <div class="input-group-append">
             <button class="btn btn-secondary btn-md waves-effect m-0" type="submit">Redeem</button>
             </div>

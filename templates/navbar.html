@@ -3,7 +3,7 @@
 <nav class="navbar fixed-top navbar-expand-lg navbar-light white scrolling-navbar">
     <div class="container">
         <!-- Brand -->
-        <a class="navbar-brand waves-effect" href="">
+        <a class="navbar-brand waves-effect" href="/">
             <strong class="blue-text">KickSeller.com</strong>
         </a>
 
@@ -18,7 +18,7 @@
             <!-- Left -->
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link waves-effect" href="#">Home
+                    <a class="nav-link waves-effect" href="/">Home
                         <span class="sr-only">(current)</span>
                     </a>
                 </li>
@@ -45,7 +45,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a href="}" class="nav-link border border-light rounded waves-effect">
+                    <a href="{% url 'account_logout' %}" class="nav-link border border-light rounded waves-effect">
                         <i class="fas fa-sign-in-alt mr-2"></i>Logout
                     </a>
                 </li>
@@ -53,13 +53,13 @@
                 {% else %}
 
                 <li class="nav-item">
-                    <a href="" class="nav-link border border-light rounded waves-effect">
+                    <a href="{% url 'account_login' %}" class="nav-link border border-light rounded waves-effect">
                         <i class="fas fa-sign-in-alt mr-2"></i>Login
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="" class="nav-link border border-light rounded waves-effect">
+                    <a href="accounts/signup" class="nav-link border border-light rounded waves-effect">
                         <i class="fas fa-sign-in-alt mr-2"></i> Sign Up!
                     </a>
                 </li>
