@@ -11,6 +11,8 @@ from system.models import *
 register = template.Library()
 
 
+
+
 @register.inclusion_tag("paystack_button.html", takes_context=True)
 def paystack_button(
     context,
@@ -18,7 +20,7 @@ def paystack_button(
     currency="ngn",
     plan="",
     button_class="",
-    amount=int(order.get_total() * 100),
+    amount=None,
     ref=None,
     email=None,
     redirect_url=None,
