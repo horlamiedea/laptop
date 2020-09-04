@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('system.urls')),
     path('accounts/', include('allauth.urls')),
+    path("paystack/", include('paystack.urls')),
 ]
 
 if settings.DEBUG:

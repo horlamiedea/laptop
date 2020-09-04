@@ -1,38 +1,8 @@
 {% extends 'base.html' %}
+{% load paystack %}
 {% block content %}
 {% include 'order_simplet.html' %}
 
-<form>
-        <script src="{{payment_info.js_script}}"></script>
-        <button class="red" id="paystack-button" type="button" onclick="payWithPaystack()"> Pay </button>
-    </form>
-
-    <script>
-        function payWithPaystack() {
-            let currency = "{{payment_info.currency}}"
-            let plan = null;
-            let ref = "{{payment_info.ref}}"
-            let obj = {
-                key: '{{payment_info.key}}',
-                email: 'horlamiedea@gmail.com',
-                amount: {{payment_info.amount}},
-                ref: ref,
-                callback: function (response) {
-                    debugger;
-                    window.location.href = "{{redirect_url}}&trxref=" + response.trxref
-                    }
-            }
-
-        if (Boolean(currency)) {
-            obj.currency = currency.toUpperCase()
-        }
-        if (Boolean(plan)) {
-            obj.plan = plan
-        }
-        var handler = PaystackPop.setup(obj);
-        handler.openIframe();
-        console.log({ currency, plan, ref })
-        }
-    </script>
+{% paystack_button   email="olamide@gmail.com" %}
 
 {% endblock content %}

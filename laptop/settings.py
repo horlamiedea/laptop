@@ -154,3 +154,6 @@ LOGIN_REDIRECT_URL = '/'
 
 PAYSTACK_PUBLIC_KEY = 'pk_test_4d7ff6869c2f9b72bff47b34cdd2702a7400a796'
 PAYSTACK_SCRET_KEY = 'sk_test_7dfc9b0cfdb61a48b810889dbf753849e2fa0ae7'
+
+PAYSTACK_SUCCESS_URL = 'your success url'
+PAYSTACK_FAILED_URL = 'your failed url'
