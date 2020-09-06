@@ -104,7 +104,7 @@ class BillingAddress(models.Model):
         return self.user.username
     
 class Payment(models.Model):
-    paystack_charge_id = models.CharField(max_length=100)
+    stripe_charge_id = models.CharField(max_length=49, blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.SET_NULL, blank=True, null=True)
     amount = models.FloatField()
