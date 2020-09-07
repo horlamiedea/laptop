@@ -14,5 +14,6 @@ urlpatterns = [
     path('checkout/', CheckoutView.as_view(), name='checkout'),
     path('payment/<payment_option>/', PaymentView.as_view(), name='payment'),
     path('add-discount/', AddDiscount.as_view(), name='add-discount'),
+    path('request-refund/', RequestRefundView.as_view(), name='request-refund'),
 
 ]

@@ -6,13 +6,18 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, View
 from django.utils import timezone
-from .models import Item, OrderItem, Order, BillingAddress, Payment, Discount
-from .forms import CheckoutForm, DiscountForm
+from .models import Item, OrderItem, Order, BillingAddress, Payment, Discount, Refund
+from .forms import CheckoutForm, DiscountForm, RefundForm
 import stripe
+import random
+import string
 # from .models import Item
 
 # Create your views here.
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+def create_ref_code():
+    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20))
 
 class HomeView(ListView):
     model = Item
@@ -172,8 +177,8 @@ class CheckoutView(View):
                 order.billing_address = billing_address
                 order.save()
 
-                if payment_option == 'P':
-                    return redirect('payment', payment_option='Pay Stack')
+                if payment_option == 'C':
+                    return redirect('payment', payment_option='Credit Card')
                 elif payment_option == 'D':
                     return redirect('payment', payment_option='Debit card')
                 else:
@@ -202,15 +207,34 @@ class PaymentView(View):
     def post(self, *args, **kwargs):
         order = Order.objects.get(user=self.request.user, ordered=False)
         token = self.request.POST.get('stripeToken')
-        amount = int(order.get_total() * 1000)
+        amount = int(order.get_total() * 100)
 
 
         try:
             charge = stripe.Charge.create(
                 amount=amount,
                 currency="usd",
-                source=token,
+                source=token
             )
+
+            payment = Payment()
+            payment.stripe_charge_id = charge['id']
+            payment.user = self.request.user
+            payment.amount = order.get_total()
+            payment.save()
+# assigning item to payment
+            order_items = order_items.all()
+            order_items.update(ordered=True)
+            for item in order_items:
+                item.save()
+
+            order.ordered = True
+            order.payment = payment
+            order.ref_code = create_ref_code()
+            order.save()
+
+            messages.warning(self.request, "Order successful")
+            return redirect("/")
 
         except stripe.error.CardError as e:
 
@@ -259,7 +283,11 @@ class PaymentView(View):
 
         order.ordered = True
         order.payment = payment
+        order.ref_code = create_ref_code()
         order.save()
+
+        messages.success(self.request, "Order was successful")
+        return redirect('/')
 
 # the next 4 lines of code help to clear cart after successful payment on a re order
         
@@ -296,3 +324,38 @@ class AddDiscount(View):
 
 
 
+
+
+class RequestRefundView(View):
+    def get(self, *args, **kwargs):
+        form = RefundForm()
+        context = {
+            'form': form
+        }
+        return render(self.request, "request_refund.html", context)
+
+    def post(self, *args, **kwargs):
+        form = RefundForm(self.request.POST)
+        if form.is_valid():
+            ref_code = form.cleaned_data.get('ref_code')
+            message = form.cleaned_data.get('message')
+            email = form.cleaned_data.get('email')
+            # edit the order
+            try:
+                order = Order.objects.get(ref_code=ref_code)
+                order.refund_requested = True
+                order.save()
+
+                # store the refund
+                refund = Refund()
+                refund.order = order
+                refund.reason = message
+                refund.email = email
+                refund.save()
+
+                messages.info(self.request, "Your request was received.")
+                return redirect("request-refund")
+
+            except ObjectDoesNotExist:
+                messages.info(self.request, "This order does not exist.")
+                return redirect("request-refund")

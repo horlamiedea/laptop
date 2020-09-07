@@ -11,8 +11,6 @@ from . import settings, signals, utils
 from .signals import payment_verified
 from .utils import load_lib
 from .models import PaymentHistory
-from system.views import *
-from system.models import *
 
 
 def verify_payment(request, order):

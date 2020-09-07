@@ -3,9 +3,9 @@ from django_countries.fields import CountryField
 from django_countries.widgets import CountrySelectWidget
 
 PAYMENT_CHOICES = (
-    ('D', 'Debit Card'),
-    ('C', 'Credit Card'),
-    ('P', 'Pay Stack')
+    ('S', 'Stripe'),
+    ('C', 'Credit-Card'),
+    ('P', 'Pay-Stack')
 )
 class CheckoutForm(forms.Form):
     shipping_address = forms.CharField(required=False)
@@ -38,3 +38,11 @@ class DiscountForm(forms.Form):
         'aria-label': 'Recipient\'s username',
         'aria-describedby': 'basic-addon2'
     }))
+
+
+class RefundForm(forms.Form):
+    ref_code = forms.CharField()
+    message = forms.CharField(widget=forms.Textarea(attrs={
+        'rows': 4
+    }))
+    email = forms.EmailField()
