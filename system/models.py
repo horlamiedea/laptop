@@ -17,6 +17,11 @@ LABLE_CHOICES = (
     ('D', 'danger')
 )
 
+ADDRESS_CHOICES = (
+    ('B', 'Billing'),
+    ('S', 'Shipping'),
+)
+
 
 class Item(models.Model):
     title = models.CharField(max_length=100)
@@ -69,12 +74,15 @@ class OrderItem(models.Model):
 class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
-    ref_code = models.CharField(max_length= 15)
+    ref_code = models.CharField(max_length=15)
     items = models.ManyToManyField(OrderItem)
     start_date = models.DateTimeField(auto_now_add=True)
     ordered_date = models.DateTimeField()
     ordered = models.BooleanField(default=False)
-    billing_address = models.ForeignKey('BillingAddress', on_delete=models.SET_NULL, blank=True, null=True)
+    billing_address = models.ForeignKey(
+        'Address', related_name='billing_address', on_delete=models.SET_NULL, blank=True, null=True)
+    shipping_address = models.ForeignKey(
+        'Address', related_name='shippings_address', on_delete=models.SET_NULL, blank=True, null=True)
     payment = models.ForeignKey(
         'Payment', on_delete=models.SET_NULL, blank=True, null=True)
 
@@ -85,10 +93,6 @@ class Order(models.Model):
     recieved = models.BooleanField(default=False)
     refund_requested = models.BooleanField(default=False)
     refund_granted = models.BooleanField(default=False)
-    
-
-    
-    
 
     def __str__(self):
         return self.user.username
@@ -102,17 +106,20 @@ class Order(models.Model):
         return total
 
 
-class BillingAddress(models.Model):
+class Address(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
     shipping_address = models.CharField(max_length=100)
     shipping_address2 = models.CharField(max_length=100)
     shipping_country = CountryField(multiple=False)
-    shipping_zip = models.CharField( max_length=50)
+    shipping_zip = models.CharField(max_length=50)
+    address_type = models.CharField(max_length=1, choices=ADDRESS_CHOICES)
+    default = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.username
-    
+
+
 class Payment(models.Model):
     stripe_charge_id = models.CharField(max_length=49, blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
@@ -123,13 +130,14 @@ class Payment(models.Model):
     def __str__(self):
         return self.user.username
 
+
 class Discount(models.Model):
     code = models.CharField(max_length=17)
     amount = models.FloatField()
 
     def __str__(self):
         return self.code
-    
+
 
 class Refund(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)

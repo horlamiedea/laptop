@@ -5,8 +5,6 @@ from django.utils.html import format_html
 from .. import settings
 from django.utils.crypto import get_random_string
 from paystack.utils import get_js_script
-from system.views import *
-from system.models import *
 
 register = template.Library()
 

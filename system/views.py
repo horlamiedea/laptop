@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, View
 from django.utils import timezone
-from .models import Item, OrderItem, Order, BillingAddress, Payment, Discount, Refund
+from .models import Item, OrderItem, Order, Address, Payment, Discount, Refund
 from .forms import CheckoutForm, DiscountForm, RefundForm
 import stripe
 import random
@@ -166,12 +166,13 @@ class CheckoutView(View):
                 #     'same_billing_address')
                 # save_info = form.cleaned_data.get('save_info')
                 payment_option = form.cleaned_data.get('payment_option')
-                billing_address = BillingAddress(
+                billing_address = Address(
                     user=self.request.user,
                     stree_address=shipping_address,
                     shipping_address2=shipping_address2,
                     shipping_country=shipping_country,
                     shipping_zip=shipping_zip,
+                    address_type = 'B'
                 )
                 billing_address.save()
                 order.billing_address = billing_address
